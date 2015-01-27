@@ -1,5 +1,12 @@
 d3.csv('./sample_data.csv', function(error, data) {
     console.log(data);
+    
+    d3.select('body')
+        .selectAll('p')
+        .data(data)
+        .enter()
+        .append('div')
+        .text(function (d) {return d.date})
 });
 
 
