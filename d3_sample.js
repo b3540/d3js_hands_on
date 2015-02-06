@@ -1,12 +1,109 @@
 d3.csv('./sample_data.csv', function(error, data) {
-    console.log(data);
+    var metrics = 'sunshine_duration';
+
+    //日付をパース yyy/mm/dd
+    var parseDate = d3.time.format("%Y/%m/%d").parse;
+    var formatDate = d3.time.format('%m/%d');
+
+    // サイズの定義
+    var width = 600;
+    var height = 400;
     
-    d3.select('body')
-        .selectAll('p')
+    // svgを追加
+    drawArea = d3.select('body').append('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .style('color', '#000')
+        .append('g')
+        // .attr('transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    // 描画
+    drawArea
+        .selectAll('rect')
         .data(data)
         .enter()
-        .append('div')
-        .text(function (d) {return d.date})
+        .append('rect')
+        .on('click', function (d) {
+            alert(d.date)
+        })
+        .attr('fill', '#f00')
+        .attr("height", 10)
+        .attr("width", 0)
+        .attr("y", function (d, i) {
+            return i * 15;
+        })
+        .transition()
+        .duration(1000)
+        .delay(function(d, i) {
+            return  i * 20;
+        })
+        .ease('bounce')
+        .attr("width", function (d) {
+            return d[metrics] * 30;
+        });
+    //％表記にするための準備。 y軸の定義時に使用。
+ //    var formatPercent = d3.format('.0%');
+
+ //    //データセット型変換
+ //    // if (series == 'timeline') {
+ //    data.forEach(function(d) {
+ //        d.formateDate = parseDate(d.date);
+ //    });
+
+ //    // d3.max(maxMetrics);
+ //    minDate = d3.min(data, function(d) { return parseInt(d.formateDate, 10); })
+ //    maxDate = d3.max(data, function(d) { return parseInt(d.formateDate, 10); })
+ //    maxY = d3.max(data, function(d) { return parseInt(d[metrics], 10); })
+    
+ //    scaleX = d3.time.scale()
+ //        .domain([minDate, maxDate])
+ //        .rangeRound([0, width]);
+
+ //    scalesY = d3.scale.linear()
+    //  .domain([0, maxY])
+    //  .rangeRound([height, 0]);
+
+    // var xAxis = d3.svg.axis()
+ //        .scale(scaleX)
+ //        .orient("bottom");
+
+ //    var yAxis = d3.svg.axis()
+ //        .scale(scalesY)
+ //        .orient("left")
+    
+ //    // 設定ファイルへ
+ //    var formatValue = d3.format('.1s');
+    
+ //    // x軸のフォーマット決定
+ //    xAxis.ticks(3)
+ //        .tickFormat(d3.time.format('%m/%d'));
+
+ //    // y軸のフォーマット決定
+ //    yAxis.ticks(3)
+ //        .tickFormat(function(d) { return formatValue(d)});
+
+ //    // x軸を追加
+ //    svg.append('g')
+ //        .attr('class', 'x axis')
+ //        .attr('transform', 'translate(0,' + height+ ')')
+ //        .call(xAxis);
+        
+
+ //    // y軸を追加
+ //    svg.append('g')
+ //        .attr({
+ //          'class': 'y axis'
+ //        })
+ //        .call(yAxis)
+ //        .append('text')
+ //        .attr({
+ //            'transform': 'rotate(-90)',
+ //            'y': 6,
+ //            'dy': '.71em'
+ //        })
+ //        .style('text-anchor', 'end')
+ //        .text(metrics);
 });
 
 
