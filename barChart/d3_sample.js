@@ -1,10 +1,6 @@
 d3.csv('./sample_data.csv', function(error, data) {
     var metrics = 'wind_speed';
 
-    //日付をパース yyy/mm/dd
-    var parseDate = d3.time.format('%Y/%m/%d').parse;
-    var formatDate = d3.time.format('%m/%d');
-
     // サイズの定義
     var maxHeight = 400;
     var maxWidth = 600;
