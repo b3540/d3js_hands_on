@@ -1,27 +1,56 @@
 d3.csv('./sample_data.csv', function(error, data) {
-    var metrics = 'sunshine_duration';
+    var metrics = 'temperature';
 
     //日付をパース yyy/mm/dd
     var parseDate = d3.time.format('%Y/%m/%d').parse;
     var formatDate = d3.time.format('%m/%d');
 
     // サイズの定義
-    var width = 600;
-    var height = 400;
+    var maxHeight = 400;
+    var maxWidth = 600;
+    var leftMargin = 50;
+    var topMargin = 50;
+    
+    // 描画領域のサイズを設定
+    var height = maxHeight - topMargin
+    var width = maxWidth - leftMargin
     
     // svgを追加
     drawArea = d3.select('body').append('svg')
-        .attr('width', width)
-        .attr('height', height)
+        .attr('width', maxWidth)
+        .attr('height', maxHeight)
         .style('color', '#000')
         .append('g')
-        // .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        .attr('transform', 'translate(' + leftMargin + ',' + topMargin + ')')
+        
+    // 最大値の取得
+    var yMax = d3.max(data, function (d) { return parseInt(d[metrics], 10) + 1})
+    // 最小値の取得
+    var yMin = d3.min(data, function (d) { return d[metrics]})
 
+    // yのスケールの設定
     var yScale = d3.scale.linear()
-                    .domain([-10, 15])
-                    .range([0, 300]);
+                    .domain([yMin, yMax])
+                    .range([height, 0]);
 
-    // 描画
+    // yの軸の設定
+    var yAxis = d3.svg.axis()
+                    .scale(yScale)
+                    .orient('left');
+
+    
+    // y軸をsvgに表示
+    drawArea
+        .append('g')
+        .attr('class', 'y axis')
+        .call(yAxis)
+        .append('text')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', 6)
+        .attr('dy', '.71em')
+        .style('text-anchor', 'end')
+
+    // バーの描画
     drawArea
         .selectAll('rect')
         .data(data)
@@ -31,10 +60,14 @@ d3.csv('./sample_data.csv', function(error, data) {
             alert(d[metrics])
         })
         .on('mouseover', function (d) {
-            console.log(d)
-            console.log(d3.select(this))
             d3.select(this)
-                .attr('fill', 'orange');
+                .attr('fill', 'orange')
+                .append('text')
+                .text(d[metrics])
+        })
+        .on('mouseout', function (d) {
+            d3.select(this)
+                .attr('fill', 'red');
         })
         .attr('fill', '#f00')
         .attr('height', 0)
@@ -50,10 +83,10 @@ d3.csv('./sample_data.csv', function(error, data) {
         })
         .ease('bounce')
         .attr('y', function (d) {
-            return height - yScale(d[metrics])
+            return yScale(d[metrics])
         })
         .attr('height', function (d) {
-            return yScale(d[metrics]);
+            return height - yScale(d[metrics]);
         });
     //％表記にするための準備。 y軸の定義時に使用。
  //    var formatPercent = d3.format('.0%');
